@@ -1,0 +1,42 @@
+import json
+from kafka import KafkaProducer
+import csv
+import time
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+# Configuration du serveur Kafka
+bootstrap_servers = ['localhost:9092']
+topic = 'TransferData'
+
+# Création du producteur Kafka
+producer = KafkaProducer(bootstrap_servers=bootstrap_servers)
+
+# Chemin vers le fichier CSV en temps réel
+csv_file_path = r'C:\Users\pc\Desktop\application\donnees_air.csv'
+
+# Classe pour surveiller les modifications apportées au fichier CSV
+class CSVHandler(FileSystemEventHandler):
+    def on_modified(self, event):
+        if event.src_path.endswith('.csv'):
+            with open(csv_file_path, newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    # Convertir la ligne en objet JSON
+                    json_data = json.dumps(row)
+                    # Envoyer les données au topic Kafka
+                    producer.send(topic, value=json_data.encode('utf-8'))
+
+# Observer pour surveiller les modifications apportées au fichier CSV
+event_handler = CSVHandler()
+observer = Observer()
+observer.schedule(event_handler, path='.', recursive=False)
+observer.start()
+
+# Maintenir le programme actif
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    observer.stop()
+observer.join()
