@@ -1,0 +1,36 @@
+{
+    "Region" :
+    [
+        {
+           "longitude": "...",
+           "latitude": "...",
+           "Date-Time":"...",
+           "NO2": "...",
+           "CO": "...",
+           "PM10": "...",
+           "PM2.5": "...",
+           "SO2": "...",
+           "O3": "...",
+           "Vitesse vent": "...",
+           "Direction vent": "...",
+           "AQI-value": "...",
+           "AQI-category": "..."
+        },
+        {
+            "longitude": "...",
+            "latitude": "...",
+            "Date-Time":"...",
+            "NO2": "...",
+            "CO": "...",
+            "PM10": "...",
+            "PM2.5": "...",
+            "SO2": "...",
+            "O3": "...",
+            "Vitesse vent": "...",
+            "Direction vent": "...",
+            "AQI-value": "...",
+            "AQI-category": "..."
+         }
+         //autres positions de la region
+    ]
+}

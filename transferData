@@ -13,7 +13,7 @@ topic = 'TransferData'
 producer = KafkaProducer(bootstrap_servers=bootstrap_servers)
 
 # Chemin vers le fichier CSV en temps réel
-csv_file_path = r'C:\Users\pc\Desktop\application\donnees_air.csv'
+csv_file_path = r'C:\Users\pc\Documents\GitHub\New folder\AIR-SYSTEM-MONITORING\donnees_air.csv'
 
 # Classe pour surveiller les modifications apportées au fichier CSV
 class CSVHandler(FileSystemEventHandler):
@@ -22,8 +22,22 @@ class CSVHandler(FileSystemEventHandler):
             with open(csv_file_path, newline='') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
+                    # Convertir les valeurs en types de données appropriés
+                    converted_row = {
+                        'DateTime': row['DateTime'],  # Assurez-vous que DateTime est déjà au bon format
+                        'Latitude': float(row['Latitude']),
+                        'Longitude': float(row['Longitude']),
+                        'NO2': float(row['NO2']),
+                        'CO': float(row['CO']),
+                        'PM10': float(row['PM10']),
+                        'PM25': float(row['PM25']),
+                        'SO2': float(row['SO2']),
+                        'O3': float(row['O3']),
+                        'Direction vent': row['Direction vent'],
+                        'Vitesse vent': row['Vitesse vent']
+                    }
                     # Convertir la ligne en objet JSON
-                    json_data = json.dumps(row)
+                    json_data = json.dumps(converted_row)
                     # Envoyer les données au topic Kafka
                     producer.send(topic, value=json_data.encode('utf-8'))
 
