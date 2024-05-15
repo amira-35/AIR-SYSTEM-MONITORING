@@ -33,7 +33,21 @@ def simulate_real_time_data(seconds, filename, latitude_range, longitude_range):
         
         # Obtenir la vitesse et la direction du vent
         wind_speed, wind_direction = get_wind_info(latitude, longitude)
+<<<<<<< HEAD
+         
+        # Générer des données aléatoires de pollution
+        no2 = round(random.uniform(0, 400), 2)
+        co = round(random.uniform(0, 30), 2)
+        pm10 = round(random.uniform(0, 500), 2)
+        pm25 = round(random.uniform(0, 250), 2)
+        so2 = round(random.uniform(0, 500), 2)
+        o3 = round(random.uniform(0, 180), 2)
+        #calculer l'aqi globale 
+        aqiglob = round(calculate_aqi(o3, pm25, pm10, co, so2, no2), 2)
+        aqicat=assign_aqi_category(aqiglob)
+=======
         
+>>>>>>> parent of 6fa2f6c (up)
         new_data = {
             'DateTime': datetime.now(),
             'Latitude': latitude,
