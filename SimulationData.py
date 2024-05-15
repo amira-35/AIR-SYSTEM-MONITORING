@@ -7,7 +7,7 @@ import firebase_admin
 from firebase_admin import credentials, db
 
 # Initialisation de Firebase avec un fichier de clé JSON
-cred = credentials.Certificate('sdkey.json')
+cred = credentials.Certificate(r'C:\Users\pc\Desktop\AIR-SYSTEM-MONITORING\sdkey.json')
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://air-database-e9425-default-rtdb.europe-west1.firebasedatabase.app/'
 })
