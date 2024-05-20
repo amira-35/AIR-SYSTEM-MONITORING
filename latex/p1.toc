@@ -1,0 +1,50 @@
+\babel@toc {french}{}\relax 
+\contentsline {chapter}{\numberline {1}Étude de l'existant}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Introduction}{3}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Présentation de l’organisme d’accueil}{3}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}COSIDER GROUPE}{3}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}COSIDER CANALISATIONS}{3}{subsection.1.2.2}%
+\contentsline {subsubsection}{Ses activités}{3}{subsection.1.2.2}%
+\contentsline {subsubsection}{Organigramme de COSIDER CANALISATIONS}{4}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}Présentations de la structure d’accueil DAST}{5}{subsection.1.2.3}%
+\contentsline {subsubsection}{Organigramme de la DAST}{5}{subsection.1.2.3}%
+\contentsline {section}{\numberline {1.3}Étude des procédures}{6}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Diagramme de flux de la procédure d’Appel d’offre}{6}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Diagramme de flux de la procédure de Consultation}{7}{subsection.1.3.2}%
+\contentsline {section}{\numberline {1.4}Étude des postes de travail}{8}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Étude des documents}{9}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Critiques et remarques}{10}{section.1.6}%
+\contentsline {section}{\numberline {1.7}Conclusion}{10}{section.1.7}%
+\contentsline {chapter}{\numberline {2}Conception}{12}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Introduction}{13}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Définition des acteurs}{13}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Modélisation des cas d'utilisations}{13}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Gestion des employés, des comptes et mise à jour du site}{14}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Gestion des compartiments}{15}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Dépôt et consultation de la DA}{16}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Modélisation des scénarios}{17}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Authentification}{17}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Ajout d'un compte}{18}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Dépôt et affectation de la DA}{19}{subsection.2.4.3}%
+\contentsline {subsection}{\numberline {2.4.4}Cheminement et traitement de la DA}{20}{subsection.2.4.4}%
+\contentsline {section}{\numberline {2.5}Modélisation des données}{22}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Diagramme de classe}{22}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Modèle Relationnel de données}{23}{subsection.2.5.2}%
+\contentsline {section}{\numberline {2.6}Conclusion}{23}{section.2.6}%
+\contentsline {chapter}{\numberline {3}Réalisation}{24}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Introduction}{25}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Présentation de l’architecture 3-tiers}{25}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Présentation des outils de travail}{26}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Serveurs}{26}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Logiciels}{26}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Langages de programmations}{27}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Sécurité de l'application}{27}{subsection.3.3.4}%
+\contentsline {section}{\numberline {3.4}Présentation de l'application}{27}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Espace Authentification}{28}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Espace Administrateur}{29}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Espace Direction Cliente (DHC / DML / DMC / DTH)}{32}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Espace DAST}{33}{subsection.3.4.4}%
+\contentsline {subsection}{\numberline {3.4.5}Espace Responsable}{36}{subsection.3.4.5}%
+\contentsline {section}{\numberline {3.5}Conclusion}{38}{section.3.5}%
+\contentsline {chapter}{\numberline {A}Description des tables de la BDD}{I}{appendix.A}%
+\contentsline {chapter}{\numberline {B}Description des Classes}{IV}{appendix.B}%

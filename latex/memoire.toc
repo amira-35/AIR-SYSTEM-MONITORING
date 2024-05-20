@@ -1,0 +1,68 @@
+\babel@toc {french}{}\relax 
+\contentsline {chapter}{\numberline {1}Étude de Cas}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Introduction}{3}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Définitions}{3}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Définition 1}{3}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Définition 2}{3}{subsection.1.2.2}%
+\contentsline {section}{\numberline {1.3}Types de pollution}{3}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Pollution de l'eau}{3}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Pollution du sol}{3}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}Pollution sonore}{4}{subsection.1.3.3}%
+\contentsline {subsection}{\numberline {1.3.4}Pollution lumineuse}{4}{subsection.1.3.4}%
+\contentsline {subsection}{\numberline {1.3.5}Pollution thermique}{4}{subsection.1.3.5}%
+\contentsline {subsection}{\numberline {1.3.6}Pollution radioactive}{4}{subsection.1.3.6}%
+\contentsline {section}{\numberline {1.4}Cas d'étude : Pollution de l'air}{4}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Définition}{4}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}Polluants atmosphériques (de l’air)}{5}{subsection.1.4.2}%
+\contentsline {subsubsection}{Définitions}{5}{subsection.1.4.2}%
+\contentsline {subsubsection}{Différents polluants,seuils recommandés}{5}{subsection.1.4.2}%
+\contentsline {subsubsection}{Facteurs provoquant les polluants }{5}{subsection.1.4.2}%
+\contentsline {section}{\numberline {1.5}Impact de la pollution atmosphérique}{7}{section.1.5}%
+\contentsline {subsection}{\numberline {1.5.1}Maladies Cardiaques}{7}{subsection.1.5.1}%
+\contentsline {subsection}{\numberline {1.5.2}Accidents vasculaires cérébraux (AVC)}{7}{subsection.1.5.2}%
+\contentsline {subsection}{\numberline {1.5.3}Cancer du poumon}{7}{subsection.1.5.3}%
+\contentsline {subsection}{\numberline {1.5.4}Les maladies respiratoire}{8}{subsection.1.5.4}%
+\contentsline {subsubsection}{Types de maladies respiratoires associées à la pollution atmosphérique :}{8}{subsection.1.5.4}%
+\contentsline {subsubsection}{Gaz responsables}{8}{subsection.1.5.4}%
+\contentsline {subsubsection}{Symptômes}{8}{subsection.1.5.4}%
+\contentsline {section}{\numberline {1.6}Quelques méthodes et technologies}{8}{section.1.6}%
+\contentsline {section}{\numberline {1.7}Synthèse et discussion}{9}{section.1.7}%
+\contentsline {section}{\numberline {1.8}Conclusion}{10}{section.1.8}%
+\contentsline {chapter}{\numberline {2}IOT et GIS-IOT}{11}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Introduction}{12}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Systèmes d'Information Géographique (SIG)}{12}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Internet des objets (IOT)}{12}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Définitions}{12}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Architecture IOT}{13}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Architecture GIS-IOT}{15}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}BIG-GÉO Data dans context IOT}{16}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Architectures Big Data}{17}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Approches de Big Data}{19}{subsection.2.4.2}%
+\contentsline {subsubsection}{NoSQL (Not Only SQL)}{19}{subsection.2.4.2}%
+\contentsline {subsubsection}{Entrepôts de données (Data warehousing)}{19}{subsection.2.4.2}%
+\contentsline {subsubsection}{ Lac de données (Data Lake)}{20}{figure.2.6}%
+\contentsline {section}{\numberline {2.5}Approches d'analyses dans un context Big Data}{21}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}L'apprentissage automatique (Machine learning)}{21}{subsection.2.5.1}%
+\contentsline {subsubsection}{Types de machine learning}{21}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}L'apprentissage Profond (Deep learning)}{22}{subsection.2.5.2}%
+\contentsline {section}{\numberline {2.6}Modélisation des données}{25}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Diagramme de classe}{25}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.2}Modèle Relationnel de données}{26}{subsection.2.6.2}%
+\contentsline {section}{\numberline {2.7}Conclusion}{26}{section.2.7}%
+\contentsline {chapter}{\numberline {3}Réalisation}{27}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Introduction}{28}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Présentation de l’architecture 3-tiers}{28}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Présentation des outils de travail}{29}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Serveurs}{29}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Logiciels}{29}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Langages de programmations}{29}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Sécurité de l'application}{29}{subsection.3.3.4}%
+\contentsline {section}{\numberline {3.4}Présentation de l'application}{30}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Espace Authentification}{30}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Espace Administrateur}{31}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Espace Direction Cliente (DHC / DML / DMC / DTH)}{33}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Espace DAST}{34}{subsection.3.4.4}%
+\contentsline {subsection}{\numberline {3.4.5}Espace Responsable}{37}{subsection.3.4.5}%
+\contentsline {section}{\numberline {3.5}Conclusion}{39}{section.3.5}%
+\contentsline {chapter}{\numberline {A}Description des tables de la BDD}{I}{appendix.A}%
+\contentsline {chapter}{\numberline {B}Description des Classes}{IV}{appendix.B}%
