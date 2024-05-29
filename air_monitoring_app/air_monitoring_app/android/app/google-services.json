@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "868880906610",
+    "firebase_url": "https://air-pollution-database-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "air-pollution-database",
+    "storage_bucket": "air-pollution-database.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868880906610:android:af14c53611222e85f385eb",
+        "android_client_info": {
+          "package_name": "com.example.air"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdyAvH1URvMfLEJklKrXL8wfDdTv2UzCs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
