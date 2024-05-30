@@ -1,59 +1,44 @@
+import 'package:AirNow/firebase_options.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'Views/AlertsScreen.dart';
+import 'Views/MapScreen.dart';
+import 'Views/StatisticsScreen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(AirPollutionApp());
 }
 
-class MyApp extends StatelessWidget {
+class AirPollutionApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LocationScreen(),
+      home: BottomNavBar(),
     );
   }
 }
 
-class LocationScreen extends StatefulWidget {
+class BottomNavBar extends StatefulWidget {
   @override
-  _LocationScreenState createState() => _LocationScreenState();
+  _BottomNavBarState createState() => _BottomNavBarState();
 }
 
-class _LocationScreenState extends State<LocationScreen> {
-  String locationMessage = "Votre localisation apparaîtra ici";
+class _BottomNavBarState extends State<BottomNavBar> {
+  int _currentIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _checkPermission();
-  }
+  final List<Widget> _tabs = [
+    MapScreen(),
+    Alerts(),
+    StatisticsScreen(),
+  ];
 
-  Future<void> _checkPermission() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return;
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return;
-    }
-    _getCurrentLocation();
-  }
-
-  Future<void> _getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+  void _onTabTapped(int index) {
     setState(() {
-      locationMessage =
-          "Latitude: ${position.latitude}, Longitude: ${position.longitude}";
+      _currentIndex = index;
     });
   }
 
@@ -61,20 +46,33 @@ class _LocationScreenState extends State<LocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Localisation Actuelle'),
+         title: const Text('Air curent quality'),
+         leading : IconButton(
+         icon: const Icon(Icons.air), // Icône de position
+    onPressed: () {
+      // Action à effectuer lors du clic sur l'icône de position
+    },
+
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(locationMessage),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _getCurrentLocation,
-              child: Text('Obtenir la localisation actuelle'),
-            ),
-          ],
-        ),
+      ),
+      body: _tabs[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Map',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.warning),
+            label: 'Alerts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Statistics',
+          ),
+        ],
       ),
     );
   }

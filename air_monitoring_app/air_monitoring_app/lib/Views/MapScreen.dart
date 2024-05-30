@@ -5,6 +5,7 @@ import 'package:AirNow/widget/LegendWidget.dart';
 import 'package:AirNow/widget/CategoryCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
 import 'dart:math' as math;
@@ -29,9 +30,18 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-   _addPolygon(_currentPosition);
+    _getCurrentPosition();
   }
 
+  Future<void> _getCurrentPosition() async {
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    LatLng currentPosition = LatLng(position.latitude, position.longitude);
+    setState(() {
+      _currentPosition = currentPosition;
+      _mapController.move(_currentPosition, 15.0); // Move the map to the current position
+      _addPolygon(_currentPosition); // Add the polygon at the current position
+    });
+  }
     void _startMovement() {
     _timer = Timer.periodic(Duration(seconds: updateIntervalInSeconds.toInt()), (Timer t) {
       if (isMoving) {
