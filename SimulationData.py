@@ -9,7 +9,7 @@ from firebase_admin import credentials, db
 # Initialisation de Firebase avec un fichier de clé JSON
 cred = credentials.Certificate(r'C:\Users\pc\Desktop\AIR-SYSTEM-MONITORING\sdkey.json')
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://air-database-e9425-default-rtdb.europe-west1.firebasedatabase.app/'
+    'databaseURL': 'https://air-pollution-database-default-rtdb.europe-west1.firebasedatabase.app/'
 })
 
 # Clé API OpenWeatherMap (remplacez 'YOUR_API_KEY' par votre clé réelle)
@@ -113,11 +113,9 @@ def assign_aqi_category(aqi):
         return 4
     elif aqi <= 300:
         return 5
-    elif aqi <= 500:
+    elif (aqi <= 500) or (aqi >= 500)  :
         return 6
-    else:
-        return 0  # Ajout d'un cas pour les valeurs d'AQI non couvertes par les conditions précédentes
-
+   
 # Improved error handling
 def send_data_to_firebase(data):
     try:
@@ -128,36 +126,38 @@ def send_data_to_firebase(data):
         print(f"Error sending data to Firebase: {e}")
 
 # Fonction pour obtenir la vitesse et la direction du vent à partir des coordonnées GPS
-def get_wind_info(latitude, longitude):
+def get_weather_info(latitude, longitude):
     owm = OWM(OWM_API_KEY)
     mgr = owm.weather_manager()
     observation = mgr.weather_at_coords(latitude, longitude)
     weather = observation.weather
     wind_speed = weather.wind()['speed']  # Vitesse du vent en m/s
     wind_direction = weather.wind()['deg']  # Direction du vent en degrés
-    return wind_speed, wind_direction
+    humidity = weather.humidity  # Humidité en pourcentage
+    temperature = weather.temperature('celsius')['temp']  # Température en degrés Celsius
+    return wind_speed, wind_direction, humidity, temperature
 
 # Fonction pour simuler les données de qualité de l'air en temps réel et les sauvegarder dans un fichier CSV
 def simulate_real_time_data(seconds, filename, latitude_range, longitude_range):
-    columns = ['DateTime', 'Latitude', 'Longitude', 'NO2', 'CO', 'PM10', 'PM25', 'SO2', 'O3', 'Direction vent', 'Vitesse vent']
+    columns = ['DateTime', 'Latitude', 'Longitude', 'NO2', 'CO', 'PM10', 'PM25', 'SO2', 'O3', 'Direction vent', 'Vitesse vent', 'Humidité', 'Température']
     df = pd.DataFrame(columns=columns)
     
     while True:
         latitude, longitude = generate_random_coordinates(latitude_range, longitude_range)
         
-        # Obtenir la vitesse et la direction du vent
-        wind_speed, wind_direction = get_wind_info(latitude, longitude)
+        # Obtenir les informations météorologiques
+        wind_speed, wind_direction, humidity, temperature = get_weather_info(latitude, longitude)
          
         # Générer des données aléatoires de pollution
-        no2 = round(random.uniform(0, 400), 2)
-        co = round(random.uniform(0, 30), 2)
-        pm10 = round(random.uniform(0, 500), 2)
-        pm25 = round(random.uniform(0, 250), 2)
-        so2 = round(random.uniform(0, 500), 2)
-        o3 = round(random.uniform(0, 180), 2)
-        #calculer l'aqi globale 
+        no2 = round(random.uniform(0, 100), 2)
+        co = round(random.uniform(0, 20), 2)
+        pm10 = round(random.uniform(0, 100), 2)
+        pm25 = round(random.uniform(0, 100), 2)
+        so2 = round(random.uniform(0, 100), 2)
+        o3 = round(random.uniform(0, 100), 2)
+        # Calculer l'aqi globale 
         aqiglob = round(calculate_aqi(o3, pm25, pm10, co, so2, no2), 2)
-        aqicat=assign_aqi_category(aqiglob)
+        aqicat = assign_aqi_category(aqiglob)
         new_data = {
             "DateTime": datetime.now().isoformat(),
             "Latitude": latitude,
@@ -170,14 +170,16 @@ def simulate_real_time_data(seconds, filename, latitude_range, longitude_range):
             "O3": o3,
             "Direction vent": wind_direction,
             "Vitesse vent": wind_speed,
-            "AQI":aqiglob,
-            "AQI Category":aqicat,
+            "Humidité": humidity,
+            "Température": temperature,
+            "AQI": aqiglob,
+            "AQI Category": aqicat,
         }
         
         df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
         df.to_csv(filename, index=False)
         send_data_to_firebase(new_data)
-        time.sleep(seconds)
+        time.sleep(1)
 
 # Exemple d'utilisation
 latitude_range = (36.5813, 36.8196)
