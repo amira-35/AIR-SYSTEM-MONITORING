@@ -1,4 +1,5 @@
 // import bib
+import 'package:AirNow/Controllers/my_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -13,6 +14,7 @@ import 'package:AirNow/widget/BuildSimplePollutantCard.dart';
 import 'package:AirNow/widget/LegendWidget.dart';
 import 'package:AirNow/widget/CategoryCard.dart';
 
+
 class MapScreen extends StatefulWidget {
   @override
   _MapScreenState createState() => _MapScreenState();
@@ -24,8 +26,7 @@ class _MapScreenState extends State<MapScreen> {
   final double radiusInKm = 2.0;
   List<LatLng> _trace = [];
   LatLng _currentPosition = const LatLng(36.75, 3.06); // Example initial position
-  double windDirection = 45; // en degrés
-  double windSpeed = 10; // en km/h
+  final double distanceInKm =7.0;
   double updateIntervalInSeconds = 0.01; // Intervalle de mise à jour en secondes
   Timer? _timer;
   bool isMoving = false;
@@ -300,8 +301,8 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
           ),
-         Positioned(
-            bottom: 90,
+        Positioned(
+ bottom: 90,
             left: 16,
             child: FloatingActionButton(
               onPressed: () {
@@ -316,7 +317,10 @@ class _MapScreenState extends State<MapScreen> {
               },
               child: Icon(isMoving ? Icons.pause : Icons.play_arrow),
             ),
-          ),
+
+),
+
+
            Positioned(
             bottom: 16,
             left: 16,
@@ -327,161 +331,175 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
-  
-  Future<void> _requestPermission() async {
-    PermissionStatus status = await Permission.location.request();
-    if (status.isGranted) {
-      _checkGPS();
-    } else if (status.isPermanentlyDenied) {
-      openAppSettings();
-    } else {
-      print('Location permission is denied.');
+ 
+  void _requestPermission() async {
+    var status = await Permission.locationWhenInUse.status;
+    if (!status.isGranted) {
+      await Permission.locationWhenInUse.request();
     }
-  }
-
-  Future<void> _checkGPS() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      _showGPSDialog();
-      _getCurrentPosition();
-     
-    } else {
+    if (await Permission.locationWhenInUse.isGranted) {
       _getCurrentPosition();
     }
   }
-  void _showGPSDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("GPS désactivé"),
-          content: Text("Veuillez activer le GPS pour utiliser cette fonctionnalité."),
-          actions: [
-            TextButton(
-              child: Text("Paramètres"),
-              onPressed: () {
-                Geolocator.openLocationSettings();
-                Navigator.of(context).pop();
-                
-              },
-            ),
-            TextButton(
-              child: Text("Annuler"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+ void _centerMapOnCurrentPosition() {
+    _mapController.move(_currentPosition, 13.0);
   }
-  Future<void> _getCurrentPosition() async {
-    
-    await Geolocator.checkPermission();
-  bool serviceEnabled;
-    LocationPermission permission;
 
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled, do not continue
-      // accessing the position and request users of the App to enable the location services.
-      print('Location services are disabled.');
-      return;
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        print('Location permissions are denied');
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      print('Location permissions are permanently denied, we cannot request permissions.');
-      return;
-    }
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    LatLng currentPosition = LatLng(position.latitude, position.longitude);
-    setState(() {
-      _currentPosition = currentPosition;
-      _mapController.move(_currentPosition, 15.0); // Move the map to the current position
-      _addPolygon(_currentPosition); // Add the polygon at the current position // Add the polygon at the current position
-    });
-  }
-    
-  
-  
   void _startMovement() {
-    _timer = Timer.periodic(Duration(seconds: updateIntervalInSeconds.toInt()), (Timer t) {
-      if (isMoving) {
-        _updateZonePosition(windDirection, windSpeed);
-      }
+    _timer = Timer.periodic(Duration(seconds: updateIntervalInSeconds.toInt()), (timer) {
+      setState(() {
+        _updateZonePosition();
+      });
     });
   }
-   Future<void> _stopMovement() async {
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    setState(() {    
-    LatLng currentPosition = LatLng(position.latitude, position.longitude);// Réinitialise au point de départ
-    _currentPosition = currentPosition;
-      _trace.clear(); // Efface la trace
-      _polygons.clear();
-       _addPolygon(_currentPosition); // Efface les polygones
-    });
-  }
-  void _updateZonePosition(double windDirection, double windSpeed) {
-    double distanceInKm = (windSpeed / 3600) * updateIntervalInSeconds; // Distance parcourue en km pendant l'intervalle de temps
-    double distanceInDegrees = distanceInKm / 110.574;
 
-    double angleInRadians = windDirection * (math.pi / 180);
-    double deltaX = distanceInDegrees * math.cos(angleInRadians);
-    double deltaY = distanceInDegrees * math.sin(angleInRadians);
-
-    LatLng newPosition = LatLng(
-      _currentPosition.latitude + deltaY,
-      _currentPosition.longitude + deltaX,
-    );
-
+void _stopMovement() {
+  _timer?.cancel();
     setState(() {
-      _currentPosition = newPosition; // Met à jour la position actuelle
-      _trace.add(newPosition); // Ajoute la nouvelle position à la trace
-      _addPolygon(newPosition);
+          _getCurrentPosition(); 
+           _trace.clear(); 
+      });
+}
+
+  void _getCurrentPosition() async {
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    setState(() {
+      _currentPosition = LatLng(position.latitude, position.longitude);
+      _centerMapOnCurrentPosition();
+      _addPolygonsForSurroundingPositions();
     });
   }
-  void _addPolygon(LatLng center) {
+
+ 
+  LatLng _calculateNewPosition(LatLng currentPosition, double distanceKm, int bearingDegrees) {
+    double bearingRadians = bearingDegrees * math.pi / 180;
+    double lat1 = currentPosition.latitude * math.pi / 180;
+    double lon1 = currentPosition.longitude * math.pi / 180;
+
+    double lat2 = math.asin(math.sin(lat1) * math.cos(distanceKm / 6371) +
+        math.cos(lat1) * math.sin(distanceKm / 6371) * math.cos(bearingRadians));
+    double lon2 = lon1 +
+        math.atan2(math.sin(bearingRadians) * math.sin(distanceKm / 6371) * math.cos(lat1),
+            math.cos(distanceKm / 6371) - math.sin(lat1) * math.sin(lat2));
+
+    return LatLng(lat2 * 180 / math.pi, lon2 * 180 / math.pi);
+  }
+
+  Future<void> _updateZonePosition() async {
+    double? distancePerSecond=0;
+    int? windcurrentspeed = await getWindSpeedForPosition(_currentPosition);
+    if (windcurrentspeed == null) {
+      print('No AQI data found for position $_currentPosition.');
+    }else{
+        distancePerSecond = windcurrentspeed / 3600;
+    }
+   
+   int? windcurrentpos = await getWindDirectionForPosition(_currentPosition);
+    if (windcurrentpos == null) {
+      print('No AQI data found for position $_currentPosition.');
+    }else {
+    _currentPosition = _calculateNewPosition(_currentPosition, distancePerSecond,windcurrentpos );
+    }
+   
+    _trace.add(_currentPosition);
+    _addPolygonsForSurroundingPositions();
+  }
+
+  void _addPolygon(LatLng center, double aqi) {
     List<LatLng> points = _createCircle(center, radiusInKm);
 
     Polygon polygon = Polygon(
       points: points,
-      color: Colors.red.withOpacity(0.4),
+      color: _getColorForAQI(aqi).withOpacity(0.4), // Utilisation de la couleur en fonction de l'AQI
       borderStrokeWidth: 2,
       borderColor: Colors.transparent,
       isFilled: true,
     );
 
     setState(() {
-      _polygons = [polygon];
+      _polygons.add(polygon);
     });
   }
-   List<LatLng> _createCircle(LatLng center, double radiusInKm) {
-    const int pointsCount = 36;
-    final double radiusInDegrees = radiusInKm / 110.574;
+
+  Future<void> _addPolygonsForSurroundingPositions() async {
+    const List<int> bearings = [0, 45, 90, 135, 180, 225, 270, 315];
+    _polygons.clear();
+
+    // Obtenez l'AQI pour la position actuelle
+   double? currentAqi = await getAQIFromFirebase(_currentPosition);
+  if (currentAqi != null) {
+    _addPolygon(_currentPosition, currentAqi);
+  } else {
+    print('No AQI data found for current position.');
+  }
+
+
+    for (int bearing in bearings) {
+      LatLng newPosition = _calculateNewPosition(_currentPosition, distanceInKm, bearing);
+     double? aqi = await getAQIFromFirebase(newPosition);
+      if (aqi == null) {
+      print('No AQI data found for position $newPosition.');
+      continue;
+    }
+      int? newWindSpeed = await getWindSpeedForPosition(newPosition); // Exemple d'obtention de la vitesse du vent
+          if (newWindSpeed == null) {
+      print('No WinedSpeed data found for position $newPosition.');
+      continue;
+    }
+      int? newWindDirection = await getWindDirectionForPosition(newPosition); // Exemple d'obtention de la direction du vent
+          if (newWindDirection == null) {
+      print('No WinedSpeed data found for position $newPosition.');
+      continue;}
+
+      _polygons.add(
+        Polygon(
+          points: _createCircle(newPosition, radiusInKm),
+          color: _getColorForAQI(aqi).withOpacity(0.3),
+          borderStrokeWidth: 2,
+          borderColor: Colors.transparent,
+          isFilled: true,
+        ),
+      );
+
+      // Mettez à jour la position selon la direction et la vitesse du vent
+      newPosition = _calculateNewPosition(newPosition, newWindSpeed / 3600, newWindDirection);
+    }
+
+    setState(() {});
+  }
+
+  List<LatLng> _createCircle(LatLng center, double radiusInKm) {
+    const int pointsCount = 360;
+    const double degreesPerPoint = 360.0 / pointsCount;
+    const double earthRadius = 6371.0; // Rayon de la Terre en kilomètres
+
+    double radiusInRadians = radiusInKm / earthRadius;
+    double centerLatRadians = center.latitude * math.pi / 180;
+    double centerLonRadians = center.longitude * math.pi / 180;
 
     List<LatLng> points = [];
-    for (int i = 0; i < pointsCount; i++) {
-      double angle = (i * 2 * math.pi) / pointsCount;
-      double dx = radiusInDegrees * math.cos(angle);
-      double dy = radiusInDegrees * math.sin(angle);
 
-      points.add(LatLng(center.latitude + dy, center.longitude + dx));
+    for (int i = 0; i < pointsCount; i++) {
+      double angle = i * degreesPerPoint * math.pi / 180;
+      double pointLatRadians =
+          math.asin(math.sin(centerLatRadians) * math.cos(radiusInRadians) + math.cos(centerLatRadians) * math.sin(radiusInRadians) * math.cos(angle));
+      double pointLonRadians = centerLonRadians +
+          math.atan2(math.sin(angle) * math.sin(radiusInRadians) * math.cos(centerLatRadians),
+              math.cos(radiusInRadians) - math.sin(centerLatRadians) * math.sin(pointLatRadians));
+
+      double pointLat = pointLatRadians * 180 / math.pi;
+      double pointLon = pointLonRadians * 180 / math.pi;
+
+      points.add(LatLng(pointLat, pointLon));
     }
 
     return points;
   }
 
 
+
 }
+
+
