@@ -1,14 +1,17 @@
+// import bib
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
+import 'dart:async';
+import 'dart:math' as math;
+//import widgets 
 import 'package:AirNow/widget/AirQualityCardAdvice.dart';
 import 'package:AirNow/widget/AqiCard.dart';
 import 'package:AirNow/widget/BuildSimplePollutantCard.dart';
 import 'package:AirNow/widget/LegendWidget.dart';
 import 'package:AirNow/widget/CategoryCard.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart';
-import 'dart:async';
-import 'dart:math' as math;
 
 class MapScreen extends StatefulWidget {
   @override
@@ -30,88 +33,17 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _getCurrentPosition();
+    _requestPermission();
   }
 
-  Future<void> _getCurrentPosition() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    LatLng currentPosition = LatLng(position.latitude, position.longitude);
-    setState(() {
-      _currentPosition = currentPosition;
-      _mapController.move(_currentPosition, 15.0); // Move the map to the current position
-      _addPolygon(_currentPosition); // Add the polygon at the current position
-    });
-  }
-    void _startMovement() {
-    _timer = Timer.periodic(Duration(seconds: updateIntervalInSeconds.toInt()), (Timer t) {
-      if (isMoving) {
-        _updateZonePosition(windDirection, windSpeed);
-      }
-    });
-  }
-   void _stopMovement() {
-    setState(() {
-      _currentPosition = const LatLng(36.75, 3.06); // Réinitialise au point de départ
-      _trace.clear(); // Efface la trace
-      _polygons.clear();
-       _addPolygon(_currentPosition); // Efface les polygones
-    });
-  }
-  void _updateZonePosition(double windDirection, double windSpeed) {
-    double distanceInKm = (windSpeed / 3600) * updateIntervalInSeconds; // Distance parcourue en km pendant l'intervalle de temps
-    double distanceInDegrees = distanceInKm / 110.574;
-
-    double angleInRadians = windDirection * (math.pi / 180);
-    double deltaX = distanceInDegrees * math.cos(angleInRadians);
-    double deltaY = distanceInDegrees * math.sin(angleInRadians);
-
-    LatLng newPosition = LatLng(
-      _currentPosition.latitude + deltaY,
-      _currentPosition.longitude + deltaX,
-    );
-
-    setState(() {
-      _currentPosition = newPosition; // Met à jour la position actuelle
-      _trace.add(newPosition); // Ajoute la nouvelle position à la trace
-      _addPolygon(newPosition);
-    });
-  }
-  void _addPolygon(LatLng center) {
-    List<LatLng> points = _createCircle(center, radiusInKm);
-
-    Polygon polygon = Polygon(
-      points: points,
-      color: Colors.red.withOpacity(0.4),
-      borderStrokeWidth: 2,
-      borderColor: Colors.transparent,
-      isFilled: true,
-    );
-
-    setState(() {
-      _polygons = [polygon];
-    });
-  }
-   List<LatLng> _createCircle(LatLng center, double radiusInKm) {
-    const int pointsCount = 36;
-    final double radiusInDegrees = radiusInKm / 110.574;
-
-    List<LatLng> points = [];
-    for (int i = 0; i < pointsCount; i++) {
-      double angle = (i * 2 * math.pi) / pointsCount;
-      double dx = radiusInDegrees * math.cos(angle);
-      double dy = radiusInDegrees * math.sin(angle);
-
-      points.add(LatLng(center.latitude + dy, center.longitude + dx));
-    }
-
-    return points;
-  }
-
+  
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
   }
+  
+  
   Color _getColorForAQI(double aqi) {
     if (aqi <= 50) {
       return Colors.green;
@@ -395,4 +327,161 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
+  
+  Future<void> _requestPermission() async {
+    PermissionStatus status = await Permission.location.request();
+    if (status.isGranted) {
+      _checkGPS();
+    } else if (status.isPermanentlyDenied) {
+      openAppSettings();
+    } else {
+      print('Location permission is denied.');
+    }
+  }
+
+  Future<void> _checkGPS() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showGPSDialog();
+      _getCurrentPosition();
+     
+    } else {
+      _getCurrentPosition();
+    }
+  }
+  void _showGPSDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("GPS désactivé"),
+          content: Text("Veuillez activer le GPS pour utiliser cette fonctionnalité."),
+          actions: [
+            TextButton(
+              child: Text("Paramètres"),
+              onPressed: () {
+                Geolocator.openLocationSettings();
+                Navigator.of(context).pop();
+                
+              },
+            ),
+            TextButton(
+              child: Text("Annuler"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  Future<void> _getCurrentPosition() async {
+    
+    await Geolocator.checkPermission();
+  bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled, do not continue
+      // accessing the position and request users of the App to enable the location services.
+      print('Location services are disabled.');
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        print('Location permissions are denied');
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      print('Location permissions are permanently denied, we cannot request permissions.');
+      return;
+    }
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    LatLng currentPosition = LatLng(position.latitude, position.longitude);
+    setState(() {
+      _currentPosition = currentPosition;
+      _mapController.move(_currentPosition, 15.0); // Move the map to the current position
+      _addPolygon(_currentPosition); // Add the polygon at the current position // Add the polygon at the current position
+    });
+  }
+    
+  
+  
+  void _startMovement() {
+    _timer = Timer.periodic(Duration(seconds: updateIntervalInSeconds.toInt()), (Timer t) {
+      if (isMoving) {
+        _updateZonePosition(windDirection, windSpeed);
+      }
+    });
+  }
+   Future<void> _stopMovement() async {
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {    
+    LatLng currentPosition = LatLng(position.latitude, position.longitude);// Réinitialise au point de départ
+    _currentPosition = currentPosition;
+      _trace.clear(); // Efface la trace
+      _polygons.clear();
+       _addPolygon(_currentPosition); // Efface les polygones
+    });
+  }
+  void _updateZonePosition(double windDirection, double windSpeed) {
+    double distanceInKm = (windSpeed / 3600) * updateIntervalInSeconds; // Distance parcourue en km pendant l'intervalle de temps
+    double distanceInDegrees = distanceInKm / 110.574;
+
+    double angleInRadians = windDirection * (math.pi / 180);
+    double deltaX = distanceInDegrees * math.cos(angleInRadians);
+    double deltaY = distanceInDegrees * math.sin(angleInRadians);
+
+    LatLng newPosition = LatLng(
+      _currentPosition.latitude + deltaY,
+      _currentPosition.longitude + deltaX,
+    );
+
+    setState(() {
+      _currentPosition = newPosition; // Met à jour la position actuelle
+      _trace.add(newPosition); // Ajoute la nouvelle position à la trace
+      _addPolygon(newPosition);
+    });
+  }
+  void _addPolygon(LatLng center) {
+    List<LatLng> points = _createCircle(center, radiusInKm);
+
+    Polygon polygon = Polygon(
+      points: points,
+      color: Colors.red.withOpacity(0.4),
+      borderStrokeWidth: 2,
+      borderColor: Colors.transparent,
+      isFilled: true,
+    );
+
+    setState(() {
+      _polygons = [polygon];
+    });
+  }
+   List<LatLng> _createCircle(LatLng center, double radiusInKm) {
+    const int pointsCount = 36;
+    final double radiusInDegrees = radiusInKm / 110.574;
+
+    List<LatLng> points = [];
+    for (int i = 0; i < pointsCount; i++) {
+      double angle = (i * 2 * math.pi) / pointsCount;
+      double dx = radiusInDegrees * math.cos(angle);
+      double dy = radiusInDegrees * math.sin(angle);
+
+      points.add(LatLng(center.latitude + dy, center.longitude + dx));
+    }
+
+    return points;
+  }
+
+
 }

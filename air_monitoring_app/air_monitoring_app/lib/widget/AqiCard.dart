@@ -4,14 +4,24 @@ Widget AqiCard(double aqiValue) {
   String aqiCategory;
 
   if (aqiValue <= 50) {
-    cardColor = Colors.green;
-    aqiCategory = 'Good';
+    cardColor = Colors.lightGreen;
+    aqiCategory = 'Excellent';
   } else if (aqiValue <= 100) {
+    cardColor = Colors.green;
+    aqiCategory = 'Fair';
+  } else if (aqiValue <= 150) {
     cardColor = Colors.yellow;
-    aqiCategory = 'Moderate';
-  } else {
-    cardColor = Colors.red;
     aqiCategory = 'Poor';
+  } else if (aqiValue <= 200) {
+    cardColor = Colors.orange;
+    aqiCategory = 'Unhealthy';
+  } else if (aqiValue <= 300) {
+    cardColor = Colors.red;
+    aqiCategory = 'Very Unhealthy';
+  }
+  else {
+    cardColor = Colors.purple;
+    aqiCategory = 'Dangerous';
   }
 
   return SizedBox(
@@ -70,7 +80,7 @@ const SizedBox(width: 65),
     ),
   ],
 ),
- const SizedBox(width: 70), 
+ const SizedBox(width: 60), 
 Text(
           '$aqiCategory',
           style: const TextStyle(
@@ -79,8 +89,11 @@ Text(
             color: Colors.white,  // Set AQI value color
           ),
         ),
+       const SizedBox(width: 10), 
   ],
 ),
     ),
   );
 }
+
+ 
