@@ -5,7 +5,7 @@ class LegendWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(12.0),
-      color: Colors.white,
+      color: Colors.white.withOpacity(0.5),
       child: Column (
         children: [
           Row(  children: [

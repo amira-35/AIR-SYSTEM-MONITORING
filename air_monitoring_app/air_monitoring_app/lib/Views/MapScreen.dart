@@ -1,5 +1,6 @@
 // import bib
 import 'package:AirNow/Controllers/my_functions.dart';
+import 'package:AirNow/Controllers/recherche.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -21,6 +22,8 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
+  TextEditingController _searchController = TextEditingController();
+  Map<String, dynamic>? _cityCoordinates;
   List<Polygon> _polygons = [];
   final double radiusInKm = 2.0;
   List<LatLng> _trace = [];
@@ -107,16 +110,7 @@ class _MapScreenState extends State<MapScreen> {
           double? temperature = results[9];
           double? aqivaluecat = results[10];
           double? aqivalue = results[11];
-          print('la valeur de temperature de ma position ='+temperature.toString());
-          print('la valeur de aqicat de ma position ='+aqivaluecat.toString());
-          print('la valeur de humidity de ma position ='+humidity.toString());
-          print('la valeur de vitesse de vent de ma position ='+windSpeed.toString());
-          print('la valeur de direction de ma position ='+windDirection.toString());
-           print('la valeur de no2 de ma position ='+no2.toString());
-            print('la valeur de pm25 de ma position ='+pm25.toString());
-             print('la valeur de pm25 de ma position ='+aqivalue.toString());
-
-          showDialog(
+             showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
@@ -148,7 +142,7 @@ class _MapScreenState extends State<MapScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  'Informations sur les gaz',
+                                  'Information about gases',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w100,
@@ -159,18 +153,19 @@ class _MapScreenState extends State<MapScreen> {
                                   scrollDirection: Axis.horizontal,
                                   child: Row(
                                     children: [
-                                      BuildSimplePollutantCard('PM2.5', pm25.toString(), Colors.white),
-                                      BuildSimplePollutantCard('PM10', pm10.toString(), Colors.white),
-                                      BuildSimplePollutantCard('O3', o3.toString(), Colors.white),
-                                      BuildSimplePollutantCard('NO2', no2.toString(), Colors.white),
-                                      BuildSimplePollutantCard('SO2', so2.toString(), Colors.white),
-                                      BuildSimplePollutantCard('CO', co.toString(), Colors.white),
+                                   BuildSimplePollutantCard('PM2.5', '$pm25 ug/m³', Colors.white),
+                                   BuildSimplePollutantCard('PM10', '$pm10 ug/m³', Colors.white),
+                                   BuildSimplePollutantCard('O3', '$o3 ug/m³', Colors.white),
+                                   BuildSimplePollutantCard('NO2', '$no2 ug/m³', Colors.white),
+                                   BuildSimplePollutantCard('SO2', '$so2 ug/m³', Colors.white),
+                                   BuildSimplePollutantCard('CO', '$co ug/m³', Colors.white),
+
                                     ],
                                   ),
                                 ),
                                 const SizedBox(height: 10),
                                 const Text(
-                                  'Informations métérologiques',
+                                  'Meteorological information',
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontSize: 18,
@@ -182,10 +177,11 @@ class _MapScreenState extends State<MapScreen> {
                                   scrollDirection: Axis.horizontal,
                                   child: Row(
                                     children: [
-                                      BuildSimplePollutantCard('Wind Direction', windDirection.toString(), Colors.white),
-                                      BuildSimplePollutantCard('Wind Speed', windSpeed.toString(), Colors.white),
-                                      BuildSimplePollutantCard('Humidity', humidity.toString(), Colors.white),
-                                      BuildSimplePollutantCard('Temperature', temperature.toString(), Colors.white),
+                                    BuildSimplePollutantCard('Wind Direction', '$windDirection°', Colors.white),
+                                    BuildSimplePollutantCard('Wind Speed', '$windSpeed km/h', Colors.white),
+                                    BuildSimplePollutantCard('Humidity', '$humidity%', Colors.white),
+                                    BuildSimplePollutantCard('Temperature', '$temperature°C', Colors.white),
+
                                     ],
                                   ),
                                 ),
@@ -255,44 +251,46 @@ class _MapScreenState extends State<MapScreen> {
 
             ],
           ),
-          Positioned(
-            top: 20,
-            left: 20,
-            right: 20,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  const Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search...',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: () {
-                      // Add your search logic here
-                    },
-                  ),
-                ],
-              ),
+         
+        Positioned(
+  top: 20,
+  left: 20,
+  right: 20,
+  child: Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8.0),
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.5),
+          spreadRadius: 1,
+          blurRadius: 3,
+          offset: Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _searchController,
+            decoration: const InputDecoration(
+              hintText: 'Search...',
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
             ),
+            onSubmitted: _searchSubmitted,
           ),
+        ),
+        IconButton(
+          icon: Icon(Icons.search),
+          onPressed: _searchButtonPressed,
+        ),
+      ],
+    ),
+  ),
+),
+
           Positioned(
            bottom: 90,
             right: 16,
@@ -340,6 +338,17 @@ class _MapScreenState extends State<MapScreen> {
             ),
 
 ),
+      Positioned(
+           bottom: 155,
+            left: 16,
+            child: FloatingActionButton(
+              onPressed: () {
+                _getCurrentPosition();
+              },
+              child: Icon( Icons.gps_fixed),
+            ),
+
+),
 
 
            Positioned(
@@ -375,24 +384,29 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _stopMovement() {
-  _timer?.cancel();
-    setState(() {
-          _getCurrentPosition(); 
-           _trace.clear(); 
-      });
+void _stopMovement() {
+  _timer?.cancel(); // Annuler le timer
+  setState(() {
+    isMoving = false; // Mettre à jour l'état pour arrêter le mouvement
+    _getCurrentPosition(); // Récupérer la position actuelle
+    _trace.clear(); // Effacer la trace
+  });
 }
 
-  void _getCurrentPosition() async {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
+void _getCurrentPosition() async {
+  Position position = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.high,
+  );
+
+  if (mounted) {
     setState(() {
       _currentPosition = LatLng(position.latitude, position.longitude);
       _centerMapOnCurrentPosition();
       _addPolygonsForSurroundingPositions();
     });
   }
+}
+
 
   Future<void> _updateZonePosition() async {
     double? distancePerSecond=0;
@@ -405,29 +419,33 @@ class _MapScreenState extends State<MapScreen> {
    double? windcurrentpos = await getWindDirectionForPosition(_currentPosition);
     if (windcurrentpos == null) {
       print('No wind direction data found for position $_currentPosition.');
-    }else {
+    } else {
     _currentPosition = calculateNewPosition(_currentPosition,distancePerSecond,windcurrentpos );
     }
    
     _trace.add(_currentPosition);
-    _addPolygonsForSurroundingPositions();
+   // _addPolygonsForSurroundingPositions();
   }
 
-  void _addPolygon(LatLng center, double aqi) {
-    List<LatLng> points = createCircle(center, radiusInKm);
+void _addPolygon(LatLng center, double aqi) {
+  List<LatLng> points = createCircle(center, radiusInKm);
 
-    Polygon polygon = Polygon(
-      points: points,
-      color: getColorForAQI(aqi).withOpacity(0.4), // Utilisation de la couleur en fonction de l'AQI
-      borderStrokeWidth: 2,
-      borderColor: Colors.transparent,
-      isFilled: true,
-    );
+  Polygon polygon = Polygon(
+    points: points,
+    color: getColorForAQI(aqi).withOpacity(0.4), // Utilisation de la couleur en fonction de l'AQI
+    borderStrokeWidth: 2,
+    borderColor: Colors.transparent,
+    isFilled: true,
+  );
 
+  // Vérifiez si le widget est monté avant d'appeler setState
+  if (mounted) {
     setState(() {
       _polygons.add(polygon);
     });
   }
+}
+
 
   Future<void> _addPolygonsForSurroundingPositions() async {
     const List<double> bearings = [0, 45, 90, 135, 180, 225, 270, 315];
@@ -470,11 +488,43 @@ class _MapScreenState extends State<MapScreen> {
       );
 
       // Mettez à jour la position selon la direction et la vitesse du vent
-      //newPosition = calculateNewPosition(newPosition, newWindSpeed / 3600, newWindDirection);
+       newPosition = calculateNewPosition(newPosition, newWindSpeed / 3600, newWindDirection);
     }
-
-    setState(() {});
   }
+
+  void _searchSubmitted(String value) async {
+  _cityCoordinates = await getCoordinatesFromCity(value);
+     _currentPosition = LatLng(
+        _cityCoordinates!['lat'],
+        _cityCoordinates!['lon'],
+      );
+    double? aqivalue = await getAQIFromFirebase(_currentPosition);
+  if (_cityCoordinates != null) {
+    setState(() { 
+      _mapController.move(_currentPosition, 10.0);
+      _addPolygon(_currentPosition, aqivalue!);
+      _addPolygonsForSurroundingPositions();
+    });
+  }
+}
+
+void _searchButtonPressed() async {
+  _cityCoordinates = await getCoordinatesFromCity(_searchController.text);
+    _currentPosition = LatLng(
+        _cityCoordinates!['lat'],
+        _cityCoordinates!['lon'],);
+        
+      double? aqivalue2 = await getAQIFromFirebase(_currentPosition);
+  if (_cityCoordinates != null) {
+    setState(()  { 
+      
+      print('aqi de la position rechercher = $aqivalue2');
+      _mapController.move(_currentPosition, 10.0);
+      _addPolygon(_currentPosition, aqivalue2!);
+    });
+  }
+}
+
 
 }
 
