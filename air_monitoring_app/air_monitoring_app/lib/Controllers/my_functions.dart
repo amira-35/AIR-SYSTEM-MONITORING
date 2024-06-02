@@ -654,46 +654,14 @@ Future<double?> getSO2FromFirebase(LatLng position) async {
     case "4.0":
       return "Health effects can be immediately felt by sensitive groups. Healthy individuals may experience difficulty breathing and throat irritation with prolonged exposure. Limit outdoor activity.";
     case "5.0":
-      return "Air quality is very unhealthy, everyone may experience health effects. Minimize outdoor activities";
+      return "Health effects will be immediately felt by sensitive groups and should avoid outdoor activity. Healthy individuals are likely to experience difficulty breathing and throat irritation; consider staying indoors and rescheduling outdoor activities.";
     case "6.0":
-      return "Air quality is hazardous, everyone should avoid outdoor activities. Stay indoors if possible.";
+      return "Any exposure to the air, even for a few minutes, can lead to serious health effects on everybody. Avoid outdoor activities.";
     default:
       return "";
   }
 }
 
-Future<void> checkDataForPositions() async {
-  final databaseReference = FirebaseDatabase.instance.ref();
-
-  List<Map<String, double>> positions = [
-    {'latitude': 36.673116, 'longitude': 3.382314},
-    {'latitude': 36.708768, 'longitude': 3.385464},
-  ];
-
-  for (var position in positions) {
-    double latitude = position['latitude']!;
-    double longitude = position['longitude']!;
-
-    DatabaseReference ref = databaseReference.child('YourNodeName');
-    DatabaseEvent event = await ref.orderByChild('latitude').equalTo(latitude).once();
-    
-    if (event.snapshot.value != null) {
-      Map<dynamic, dynamic> values = event.snapshot.value as Map<dynamic, dynamic>;
-
-      values.forEach((key, value) {
-        if (value['longitude'] == longitude) {
-          double windSpeed = value['windSpeed'] ?? 0.0;
-          double windDirection = value['windDirection'] ?? 0.0;
-          print('Position: Lat: $latitude, Lon: $longitude');
-          print('Wind Speed: $windSpeed');
-          print('Wind Direction: $windDirection');
-        }
-      });
-    } else {
-      print('No data found for position: Lat: $latitude, Lon: $longitude');
-    }
-  }
-}
 
 
 /*void _fetchDataFromFirebase() {
