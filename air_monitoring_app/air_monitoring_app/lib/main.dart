@@ -33,7 +33,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _tabs = [
     MapScreen(),
     Alerts(),
-    StatisticsScreen(),
+    AirQualityChart(),
   ];
 
   void _onTabTapped(int index) {
