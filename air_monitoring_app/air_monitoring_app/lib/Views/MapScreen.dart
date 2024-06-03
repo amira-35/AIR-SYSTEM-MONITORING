@@ -26,7 +26,8 @@ class _MapScreenState extends State<MapScreen> {
   Map<String, dynamic>? _cityCoordinates;
   List<Polygon> _polygons = [];
   final double radiusInKm = 2.0;
-  List<LatLng> _trace = [];
+  LatLng? initialTracePos;
+  LatLng? latestTracePos;
   LatLng _currentPosition = const LatLng(36.75, 3.06); // Example initial position
   final double distanceInKm =7.0;
   double updateIntervalInSeconds = 0.1; // Intervalle de mise à jour en secondes
@@ -66,7 +67,7 @@ class _MapScreenState extends State<MapScreen> {
                 PolylineLayer(
                 polylines: [
                   Polyline(
-                    points: _trace,
+                    points: [initialTracePos ?? const LatLng(0, 0), latestTracePos ?? const LatLng(0, 0)],
                     strokeWidth: 4.0,
                     color: Colors.white,
                   ),
@@ -371,7 +372,7 @@ class _MapScreenState extends State<MapScreen> {
       _getCurrentPosition();
     }
   }
- 
+
   void _centerMapOnCurrentPosition() {
     _mapController.move(_currentPosition, 13.0);
   }
@@ -389,7 +390,8 @@ void _stopMovement() {
   setState(() {
     isMoving = false; // Mettre à jour l'état pour arrêter le mouvement
     _getCurrentPosition(); // Récupérer la position actuelle
-    _trace.clear(); // Effacer la trace
+    initialTracePos = null; // Réinitialiser les positions de trace
+    latestTracePos = null; // Réinitialiser les positions de trace
   });
 }
 
@@ -422,9 +424,14 @@ void _getCurrentPosition() async {
     } else {
     _currentPosition = calculateNewPosition(_currentPosition,distancePerSecond,windcurrentpos );
     }
-   
-    _trace.add(_currentPosition);
-   // _addPolygonsForSurroundingPositions();
+
+    if (initialTracePos == null) {
+      initialTracePos = _currentPosition;
+    } else {
+      latestTracePos = _currentPosition;
+    }
+
+    // _addPolygonsForSurroundingPositions();
   }
 
 void _addPolygon(LatLng center, double aqi) {
