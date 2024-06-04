@@ -1,25 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-
-class AirQualityData {
-  final DateTime time;
-  final double aqi;
-  final double co;
-  final double no2;
-  final double o3;
-  final double pm10;
-  final double pm25;
-
-  AirQualityData({
-    required this.time,
-    required this.aqi,
-    required this.co,
-    required this.no2,
-    required this.o3,
-    required this.pm10,
-    required this.pm25,
-  });
-}
+import 'package:firebase_database/firebase_database.dart';
+import 'package:AirNow/Models/air_quality_data.dart';
 
 class AirQualityChart extends StatefulWidget {
   @override
@@ -30,6 +12,8 @@ class _AirQualityChartState extends State<AirQualityChart> {
   late List<AirQualityData> data = [];
   String selectedPollutant = 'AQI';
   String selectedInterval = '1 Month';
+  final DatabaseReference databaseReference =
+      FirebaseDatabase.instance.reference().child('Region');
 
   @override
   void initState() {
@@ -37,26 +21,39 @@ class _AirQualityChartState extends State<AirQualityChart> {
     fetchData();
   }
 
-  void fetchData() {
-    setState(() {
-      data = [
-        AirQualityData(time: DateTime.now().subtract(Duration(days: 30)), aqi: 25, co: 5, no2: 10, o3: 15, pm10: 20, pm25: 18),
-        AirQualityData(time: DateTime.now().subtract(Duration(days: 29)), aqi: 30, co: 6, no2: 11, o3: 16, pm10: 22, pm25: 19),
-        AirQualityData(time: DateTime.now().subtract(Duration(days: 28)), aqi: 35, co: 7, no2: 12, o3: 17, pm10: 24, pm25: 20),
-        // Ajoutez plus de données ici pour couvrir une période d'un mois
-        AirQualityData(time: DateTime.now().subtract(Duration(days: 1)), aqi: 40, co: 8, no2: 13, o3: 18, pm10: 26, pm25: 21),
-        AirQualityData(time: DateTime.now(), aqi: 45, co: 9, no2: 14, o3: 19, pm10: 28, pm25: 22),
-      ];
+void fetchData() {
+    databaseReference.once().then((DatabaseEvent event) {
+      List<AirQualityData> fetchedData = [];
+      DataSnapshot snapshot = event.snapshot;
+      Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
+
+      print('Fetched values: $values');
+
+      values.forEach((key, value) {
+        AirQualityData dataPoint = AirQualityData.fromJson(value);
+        fetchedData.add(dataPoint);
+      });
+
+      print('Fetched data points: $fetchedData');
+
+      setState(() {
+        data = fetchedData;
+      });
+    }).catchError((error) {
+      print('Error fetching data: $error');
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final chartWidth = screenWidth * 1.5;
+
     List<charts.Series<AirQualityData, DateTime>> series = [
       charts.Series(
         id: selectedPollutant,
         data: filterDataByInterval(),
-        domainFn: (AirQualityData series, _) => series.time,
+        domainFn: (AirQualityData series, _) => series.dateTime,
         measureFn: (AirQualityData series, _) {
           switch (selectedPollutant) {
             case 'CO':
@@ -69,6 +66,8 @@ class _AirQualityChartState extends State<AirQualityChart> {
               return series.pm10;
             case 'PM25':
               return series.pm25;
+            case 'SO2':
+              return series.so2;
             default:
               return series.aqi;
           }
@@ -78,7 +77,7 @@ class _AirQualityChartState extends State<AirQualityChart> {
     ];
 
     return Scaffold(
-        body: Column(
+      body: Column(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -87,8 +86,9 @@ class _AirQualityChartState extends State<AirQualityChart> {
               children: [
                 DropdownButton<String>(
                   value: selectedPollutant,
-                  items: <String>['AQI', 'CO', 'NO2', 'O3', 'PM10', 'PM25']
-                      .map((String value) {
+                  items: <String>[
+                    'AQI', 'CO', 'NO2', 'O3', 'PM10', 'PM25', 'SO2'
+                  ].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -118,25 +118,36 @@ class _AirQualityChartState extends State<AirQualityChart> {
               ],
             ),
           ),
-            const SizedBox(height: 30),
+          const SizedBox(height: 30),
           Expanded(
-            child: charts.TimeSeriesChart(
-              series,
-              animate: true,
-              dateTimeFactory: const charts.LocalDateTimeFactory(),
-              defaultRenderer: charts.LineRendererConfig<DateTime>(),
-              behaviors: [charts.SeriesLegend()],
-              domainAxis: const charts.DateTimeAxisSpec(
-                tickFormatterSpec: charts.AutoDateTimeTickFormatterSpec(
-                  day: charts.TimeFormatterSpec(
-                    format: 'MMM d', // Format for the x-axis
-                    transitionFormat: 'MMM d',
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: chartWidth,
+                child: charts.TimeSeriesChart(
+                  series,
+                  animate: true,
+                  dateTimeFactory: const charts.LocalDateTimeFactory(),
+                  defaultRenderer: charts.LineRendererConfig<DateTime>(),
+                  behaviors: [
+                    charts.SeriesLegend(),
+                    charts.PanAndZoomBehavior(),
+                  ],
+                  domainAxis: const charts.DateTimeAxisSpec(
+                    tickProviderSpec: charts.DayTickProviderSpec(increments: [1]),
+                    tickFormatterSpec:
+                        charts.AutoDateTimeTickFormatterSpec(
+                      day: charts.TimeFormatterSpec(
+                        format: 'MMM d',
+                        transitionFormat: 'MMM d',
+                      ),
+                    ),
+                  ),
+                  primaryMeasureAxis: const charts.NumericAxisSpec(
+                    tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                        desiredTickCount: 4),
                   ),
                 ),
-              ),
-              primaryMeasureAxis: const charts.NumericAxisSpec(
-                tickProviderSpec:
-                    charts.BasicNumericTickProviderSpec(desiredTickCount: 6),
               ),
             ),
           ),
@@ -164,7 +175,8 @@ class _AirQualityChartState extends State<AirQualityChart> {
         break;
     }
 
-    return data.where((dataPoint) => dataPoint.time.isAfter(startDate)).toList();
+    return data
+        .where((dataPoint) => dataPoint.dateTime.isAfter(startDate))
+        .toList();
   }
 }
-
