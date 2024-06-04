@@ -123,7 +123,8 @@ void fetchData() {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SizedBox(
-                width: chartWidth,
+                 width: chartWidth, // Replace with desired width
+                height: 300, // Replace with desired height
                 child: charts.TimeSeriesChart(
                   series,
                   animate: true,
@@ -145,7 +146,7 @@ void fetchData() {
                   ),
                   primaryMeasureAxis: const charts.NumericAxisSpec(
                     tickProviderSpec: charts.BasicNumericTickProviderSpec(
-                        desiredTickCount: 4),
+                        desiredTickCount: 6),
                   ),
                 ),
               ),
@@ -162,16 +163,16 @@ void fetchData() {
 
     switch (selectedInterval) {
       case '24 Hours':
-        startDate = now.subtract(Duration(hours: 24));
+        startDate = now.subtract(const Duration(hours: 24));
         break;
       case '7 Days':
-        startDate = now.subtract(Duration(days: 7));
+        startDate = now.subtract(const Duration(days: 7));
         break;
       case '1 Month':
-        startDate = now.subtract(Duration(days: 30));
+        startDate = now.subtract(const Duration(days: 30));
         break;
       default:
-        startDate = now.subtract(Duration(days: 30));
+        startDate = now.subtract(const Duration(days: 30));
         break;
     }
 
