@@ -1,11 +1,12 @@
 import 'dart:ui';
 
+import 'package:AirNow/constants/dev_flags.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:math' as math;
 
-// les getters 
+// les getters
 
 Future<double?> getAQIFromFirebase(LatLng position) async {
   final databaseReference = FirebaseDatabase.instance.reference().child('Region');
@@ -39,18 +40,16 @@ Future<double?> getAQIFromFirebase(LatLng position) async {
     }
 
     if (closestAQI != null) {
-      print('Returning AQI for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning AQI for closest position $closestPosition.');
       return closestAQI;
     } else {
-      print('No AQI data found.');
+      if (enableDebugLogs) print('No AQI data found.');
     }
   } else {
-    print('No data found.');
-
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
-
 
 Future<double?> getWindSpeedForPosition(LatLng position) async {
   final databaseReference = FirebaseDatabase.instance.reference().child('Region');
@@ -73,32 +72,30 @@ Future<double?> getWindSpeedForPosition(LatLng position) async {
         double distance = Distance().as(LengthUnit.Kilometer, position, currentPos);
         if (distance == 0) {
           // Exact match found
-          print('Windspeed for position $position: $speed');
+          if (enableDebugLogs) print('Windspeed for position $position: $speed');
           return speed;
         } else if (distance < closestDistance) {
           // Closer position found
           closestDistance = distance;
           closestPosition = currentPos;
           closestSpeed = speed;
-         
         }
       }
     }
 
     if (closestSpeed != null) {
-      print('Returning wind speed for closest position $closestPosition.'+'=> $closestSpeed');
+      if (enableDebugLogs) print('Returning wind speed for closest position $closestPosition.' + '=> $closestSpeed');
 
       return closestSpeed;
     } else {
-      print('No wind speed data found.');
+      if (enableDebugLogs) print('No wind speed data found.');
       return 5; // Default value if no data is found
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
     return 5; // Default value if no data is found
   }
 }
-
 
 Future<double?> getWindDirectionForPosition(LatLng position) async {
   final databaseReference = FirebaseDatabase.instance.reference().child('Region');
@@ -132,13 +129,13 @@ Future<double?> getWindDirectionForPosition(LatLng position) async {
     }
 
     if (closestDirection != null) {
-      print('Returning wind direction for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning wind direction for closest position $closestPosition.');
       return closestDirection;
     } else {
-      print('No wind direction data found.');
+      if (enableDebugLogs) print('No wind direction data found.');
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
@@ -174,17 +171,17 @@ Future<T?> _getAttributeFromFirebase<T>(LatLng position, String attribute, T def
     }
 
     if (closestValue != null) {
-      print('Returning $attribute for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning $attribute for closest position $closestPosition.');
       return closestValue;
     }
   }
 
-  print('No data found for $attribute. Returning default value.');
+  if (enableDebugLogs) print('No data found for $attribute. Returning default value.');
   return defaultValue;
 }
 
 Future<double?> getTemperatureFromFirebase(LatLng position) async {
-   final databaseReference = FirebaseDatabase.instance.reference().child('Region');
+  final databaseReference = FirebaseDatabase.instance.reference().child('Region');
   DatabaseEvent event = await databaseReference.once();
   DataSnapshot snapshot = event.snapshot;
   Map<dynamic, dynamic>? data = snapshot.value as Map<dynamic, dynamic>?;
@@ -215,17 +212,16 @@ Future<double?> getTemperatureFromFirebase(LatLng position) async {
     }
 
     if (closestDirection != null) {
-      print('Returning wind direction for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning wind direction for closest position $closestPosition.');
       return closestDirection;
     } else {
-      print('No wind direction data found.');
+      if (enableDebugLogs) print('No wind direction data found.');
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
-
 
 Future<double?> getAQICategoryFromFirebase(LatLng position) async {
   final databaseReference = FirebaseDatabase.instance.reference().child('Region');
@@ -243,7 +239,7 @@ Future<double?> getAQICategoryFromFirebase(LatLng position) async {
       double? latitude = region['Latitude'] is int ? (region['Latitude'] as int).toDouble() : region['Latitude'] as double?;
       double? longitude = region['Longitude'] is int ? (region['Longitude'] as int).toDouble() : region['Longitude'] as double?;
       double? aqicat = region['AQI Category'] is int ? (region['AQI Category'] as int).toDouble() : region['AQI Category'] as double?;
-      
+
       if (latitude != null && longitude != null && aqicat != null) {
         LatLng currentPos = LatLng(latitude, longitude);
         double distance = Distance().as(LengthUnit.Kilometer, position, currentPos);
@@ -260,13 +256,13 @@ Future<double?> getAQICategoryFromFirebase(LatLng position) async {
     }
 
     if (closestDirection != null) {
-      print('Returning wind direction for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning wind direction for closest position $closestPosition.');
       return closestDirection;
     } else {
-      print('No wind direction data found.');
+      if (enableDebugLogs) print('No wind direction data found.');
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
@@ -287,7 +283,7 @@ Future<double?> getCOFromFirebase(LatLng position) async {
       double? latitude = region['Latitude'] is int ? (region['Latitude'] as int).toDouble() : region['Latitude'] as double?;
       double? longitude = region['Longitude'] is int ? (region['Longitude'] as int).toDouble() : region['Longitude'] as double?;
       double? co = region['CO'] is int ? (region['CO'] as int).toDouble() : region['CO'] as double?;
-      
+
       if (latitude != null && longitude != null && co != null) {
         LatLng currentPos = LatLng(latitude, longitude);
         double distance = Distance().as(LengthUnit.Kilometer, position, currentPos);
@@ -304,13 +300,13 @@ Future<double?> getCOFromFirebase(LatLng position) async {
     }
 
     if (closestDirection != null) {
-      print('Returning wind direction for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning wind direction for closest position $closestPosition.');
       return closestDirection;
     } else {
-      print('No wind direction data found.');
+      if (enableDebugLogs) print('No wind direction data found.');
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
@@ -331,7 +327,7 @@ Future<double?> getHumiditeFromFirebase(LatLng position) async {
       double? latitude = region['Latitude'] is int ? (region['Latitude'] as int).toDouble() : region['Latitude'] as double?;
       double? longitude = region['Longitude'] is int ? (region['Longitude'] as int).toDouble() : region['Longitude'] as double?;
       double? Humidity = region['Humidité'] is int ? (region['Humidité'] as int).toDouble() : region['Humidité'] as double?;
-      
+
       if (latitude != null && longitude != null && Humidity != null) {
         LatLng currentPos = LatLng(latitude, longitude);
         double distance = Distance().as(LengthUnit.Kilometer, position, currentPos);
@@ -348,13 +344,13 @@ Future<double?> getHumiditeFromFirebase(LatLng position) async {
     }
 
     if (closestDirection != null) {
-      print('Returning wind direction for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning wind direction for closest position $closestPosition.');
       return closestDirection;
     } else {
-      print('No wind direction data found.');
+      if (enableDebugLogs) print('No wind direction data found.');
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
@@ -375,7 +371,7 @@ Future<double?> getNO2FromFirebase(LatLng position) async {
       double? latitude = region['Latitude'] is int ? (region['Latitude'] as int).toDouble() : region['Latitude'] as double?;
       double? longitude = region['Longitude'] is int ? (region['Longitude'] as int).toDouble() : region['Longitude'] as double?;
       double? NO2 = region['NO2'] is int ? (region['NO2'] as int).toDouble() : region['NO2'] as double?;
-      
+
       if (latitude != null && longitude != null && NO2 != null) {
         LatLng currentPos = LatLng(latitude, longitude);
         double distance = Distance().as(LengthUnit.Kilometer, position, currentPos);
@@ -392,13 +388,13 @@ Future<double?> getNO2FromFirebase(LatLng position) async {
     }
 
     if (closestDirection != null) {
-      print('Returning wind direction for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning wind direction for closest position $closestPosition.');
       return closestDirection;
     } else {
-      print('No wind direction data found.');
+      if (enableDebugLogs) print('No wind direction data found.');
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
@@ -419,7 +415,7 @@ Future<double?> getO3FromFirebase(LatLng position) async {
       double? latitude = region['Latitude'] is int ? (region['Latitude'] as int).toDouble() : region['Latitude'] as double?;
       double? longitude = region['Longitude'] is int ? (region['Longitude'] as int).toDouble() : region['Longitude'] as double?;
       double? O3 = region['O3'] is int ? (region['O3'] as int).toDouble() : region['O3'] as double?;
-      
+
       if (latitude != null && longitude != null && O3 != null) {
         LatLng currentPos = LatLng(latitude, longitude);
         double distance = Distance().as(LengthUnit.Kilometer, position, currentPos);
@@ -436,19 +432,19 @@ Future<double?> getO3FromFirebase(LatLng position) async {
     }
 
     if (closestDirection != null) {
-      print('Returning wind direction for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning wind direction for closest position $closestPosition.');
       return closestDirection;
     } else {
-      print('No wind direction data found.');
+      if (enableDebugLogs) print('No wind direction data found.');
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
 
 Future<double?> getPM10FromFirebase(LatLng position) async {
-    final databaseReference = FirebaseDatabase.instance.reference().child('Region');
+  final databaseReference = FirebaseDatabase.instance.reference().child('Region');
   DatabaseEvent event = await databaseReference.once();
   DataSnapshot snapshot = event.snapshot;
   Map<dynamic, dynamic>? data = snapshot.value as Map<dynamic, dynamic>?;
@@ -463,7 +459,7 @@ Future<double?> getPM10FromFirebase(LatLng position) async {
       double? latitude = region['Latitude'] is int ? (region['Latitude'] as int).toDouble() : region['Latitude'] as double?;
       double? longitude = region['Longitude'] is int ? (region['Longitude'] as int).toDouble() : region['Longitude'] as double?;
       double? PM10 = region['PM10'] is int ? (region['PM10'] as int).toDouble() : region['PM10'] as double?;
-      
+
       if (latitude != null && longitude != null && PM10 != null) {
         LatLng currentPos = LatLng(latitude, longitude);
         double distance = Distance().as(LengthUnit.Kilometer, position, currentPos);
@@ -480,19 +476,19 @@ Future<double?> getPM10FromFirebase(LatLng position) async {
     }
 
     if (closestDirection != null) {
-      print('Returning wind direction for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning wind direction for closest position $closestPosition.');
       return closestDirection;
     } else {
-      print('No wind direction data found.');
+      if (enableDebugLogs) print('No wind direction data found.');
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
 
 Future<double?> getPM25FromFirebase(LatLng position) async {
-      final databaseReference = FirebaseDatabase.instance.reference().child('Region');
+  final databaseReference = FirebaseDatabase.instance.reference().child('Region');
   DatabaseEvent event = await databaseReference.once();
   DataSnapshot snapshot = event.snapshot;
   Map<dynamic, dynamic>? data = snapshot.value as Map<dynamic, dynamic>?;
@@ -507,7 +503,7 @@ Future<double?> getPM25FromFirebase(LatLng position) async {
       double? latitude = region['Latitude'] is int ? (region['Latitude'] as int).toDouble() : region['Latitude'] as double?;
       double? longitude = region['Longitude'] is int ? (region['Longitude'] as int).toDouble() : region['Longitude'] as double?;
       double? PM25 = region['PM25'] is int ? (region['PM25'] as int).toDouble() : region['PM25'] as double?;
-      
+
       if (latitude != null && longitude != null && PM25 != null) {
         LatLng currentPos = LatLng(latitude, longitude);
         double distance = Distance().as(LengthUnit.Kilometer, position, currentPos);
@@ -524,19 +520,19 @@ Future<double?> getPM25FromFirebase(LatLng position) async {
     }
 
     if (closestDirection != null) {
-      print('Returning wind direction for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning wind direction for closest position $closestPosition.');
       return closestDirection;
     } else {
-      print('No wind direction data found.');
+      if (enableDebugLogs) print('No wind direction data found.');
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
 
 Future<double?> getSO2FromFirebase(LatLng position) async {
-       final databaseReference = FirebaseDatabase.instance.reference().child('Region');
+  final databaseReference = FirebaseDatabase.instance.reference().child('Region');
   DatabaseEvent event = await databaseReference.once();
   DataSnapshot snapshot = event.snapshot;
   Map<dynamic, dynamic>? data = snapshot.value as Map<dynamic, dynamic>?;
@@ -551,7 +547,7 @@ Future<double?> getSO2FromFirebase(LatLng position) async {
       double? latitude = region['Latitude'] is int ? (region['Latitude'] as int).toDouble() : region['Latitude'] as double?;
       double? longitude = region['Longitude'] is int ? (region['Longitude'] as int).toDouble() : region['Longitude'] as double?;
       double? SO2 = region['SO2'] is int ? (region['SO2'] as int).toDouble() : region['SO2'] as double?;
-      
+
       if (latitude != null && longitude != null && SO2 != null) {
         LatLng currentPos = LatLng(latitude, longitude);
         double distance = Distance().as(LengthUnit.Kilometer, position, currentPos);
@@ -568,82 +564,77 @@ Future<double?> getSO2FromFirebase(LatLng position) async {
     }
 
     if (closestDirection != null) {
-      print('Returning wind direction for closest position $closestPosition.');
+      if (enableDebugLogs) print('Returning wind direction for closest position $closestPosition.');
       return closestDirection;
     } else {
-      print('No wind direction data found.');
+      if (enableDebugLogs) print('No wind direction data found.');
     }
   } else {
-    print('No data found.');
+    if (enableDebugLogs) print('No data found.');
   }
   return null;
 }
 
+// les fonctions de zonage
+List<LatLng> createCircle(LatLng center, double radiusInKm) {
+  const int pointsCount = 360;
+  const double degreesPerPoint = 360.0 / pointsCount;
+  const double earthRadius = 6371.0; // Rayon de la Terre en kilomètres
 
-// les fonctions de zonage 
-  List<LatLng> createCircle(LatLng center, double radiusInKm) {
-    const int pointsCount = 360;
-    const double degreesPerPoint = 360.0 / pointsCount;
-    const double earthRadius = 6371.0; // Rayon de la Terre en kilomètres
+  double radiusInRadians = radiusInKm / earthRadius;
+  double centerLatRadians = center.latitude * math.pi / 180;
+  double centerLonRadians = center.longitude * math.pi / 180;
 
-    double radiusInRadians = radiusInKm / earthRadius;
-    double centerLatRadians = center.latitude * math.pi / 180;
-    double centerLonRadians = center.longitude * math.pi / 180;
+  List<LatLng> points = [];
 
-    List<LatLng> points = [];
+  for (int i = 0; i < pointsCount; i++) {
+    double angle = i * degreesPerPoint * math.pi / 180;
+    double pointLatRadians =
+        math.asin(math.sin(centerLatRadians) * math.cos(radiusInRadians) + math.cos(centerLatRadians) * math.sin(radiusInRadians) * math.cos(angle));
+    double pointLonRadians = centerLonRadians +
+        math.atan2(math.sin(angle) * math.sin(radiusInRadians) * math.cos(centerLatRadians),
+            math.cos(radiusInRadians) - math.sin(centerLatRadians) * math.sin(pointLatRadians));
 
-    for (int i = 0; i < pointsCount; i++) {
-      double angle = i * degreesPerPoint * math.pi / 180;
-      double pointLatRadians =
-          math.asin(math.sin(centerLatRadians) * math.cos(radiusInRadians) + math.cos(centerLatRadians) * math.sin(radiusInRadians) * math.cos(angle));
-      double pointLonRadians = centerLonRadians +
-          math.atan2(math.sin(angle) * math.sin(radiusInRadians) * math.cos(centerLatRadians),
-              math.cos(radiusInRadians) - math.sin(centerLatRadians) * math.sin(pointLatRadians));
+    double pointLat = pointLatRadians * 180 / math.pi;
+    double pointLon = pointLonRadians * 180 / math.pi;
 
-      double pointLat = pointLatRadians * 180 / math.pi;
-      double pointLon = pointLonRadians * 180 / math.pi;
-
-      points.add(LatLng(pointLat, pointLon));
-    }
-
-    return points;
-  }
- 
-  LatLng calculateNewPosition(LatLng currentPosition, double distanceKm, double bearingDegrees) {
-    double bearingRadians = bearingDegrees * math.pi / 180;
-    double lat1 = currentPosition.latitude * math.pi / 180;
-    double lon1 = currentPosition.longitude * math.pi / 180;
-
-    double lat2 = math.asin(math.sin(lat1) * math.cos(distanceKm / 6371) +
-        math.cos(lat1) * math.sin(distanceKm / 6371) * math.cos(bearingRadians));
-    double lon2 = lon1 +
-        math.atan2(math.sin(bearingRadians) * math.sin(distanceKm / 6371) * math.cos(lat1),
-            math.cos(distanceKm / 6371) - math.sin(lat1) * math.sin(lat2));
-
-    return LatLng(lat2 * 180 / math.pi, lon2 * 180 / math.pi);
+    points.add(LatLng(pointLat, pointLon));
   }
 
-   Color getColorForAQI(double aqi) {
+  return points;
+}
 
-    if (aqi <= 50) {
-      return Colors.lightGreen;
-    } else if (aqi <= 100) {
-      return Colors.green;
-    } else if (aqi <= 150) {
-      return Colors.yellow;
-    } else if (aqi <= 200) {
-      return Colors.orange;
-    } else if (aqi <= 300) {
-      return Colors.red;
-    } else if(aqi >300){
-      return Colors.purple;
-    }else{
-      return Colors.black;
-    }
-   
+LatLng calculateNewPosition(LatLng currentPosition, double distanceKm, double bearingDegrees) {
+  double bearingRadians = bearingDegrees * math.pi / 180;
+  double lat1 = currentPosition.latitude * math.pi / 180;
+  double lon1 = currentPosition.longitude * math.pi / 180;
+
+  double lat2 = math.asin(math.sin(lat1) * math.cos(distanceKm / 6371) + math.cos(lat1) * math.sin(distanceKm / 6371) * math.cos(bearingRadians));
+  double lon2 =
+      lon1 + math.atan2(math.sin(bearingRadians) * math.sin(distanceKm / 6371) * math.cos(lat1), math.cos(distanceKm / 6371) - math.sin(lat1) * math.sin(lat2));
+
+  return LatLng(lat2 * 180 / math.pi, lon2 * 180 / math.pi);
+}
+
+Color getColorForAQI(double aqi) {
+  if (aqi <= 50) {
+    return Colors.lightGreen;
+  } else if (aqi <= 100) {
+    return Colors.green;
+  } else if (aqi <= 150) {
+    return Colors.yellow;
+  } else if (aqi <= 200) {
+    return Colors.orange;
+  } else if (aqi <= 300) {
+    return Colors.red;
+  } else if (aqi > 300) {
+    return Colors.purple;
+  } else {
+    return Colors.black;
   }
+}
 
-  String getAdviceForAQICategory(String aqiCategory) {
+String getAdviceForAQICategory(String aqiCategory) {
   switch (aqiCategory) {
     case "1.0":
       return "The air quality is ideal for most individuals, enjoy your normal outdoor activities";
@@ -662,8 +653,6 @@ Future<double?> getSO2FromFirebase(LatLng position) async {
   }
 }
 
-
-
 /*void _fetchDataFromFirebase() {
     final databaseReference = FirebaseDatabase.instance.reference().child('Region');
     databaseReference.onValue.listen((event) {
@@ -675,7 +664,7 @@ Future<double?> getSO2FromFirebase(LatLng position) async {
           double? longitude = entry['Longitude'] as double?;
           double? AQI = entry['AQI'] as double?;
           if (latitude != null && longitude != null) {
-           
+
           }
         });
       } else {
@@ -683,4 +672,3 @@ Future<double?> getSO2FromFirebase(LatLng position) async {
       }
     });
   }*/
-
