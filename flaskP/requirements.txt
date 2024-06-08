@@ -1,7 +1,0 @@
-flask
-numpy
-tensorflow
-scikit-learn
-# Add any other dependencies here
-
-#With your virtual environment active, pip install -r requirements.txt

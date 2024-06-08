@@ -1,4 +1,5 @@
 // import bib
+import 'package:AirNow/Controllers/flask_funct.dart';
 import 'package:AirNow/Controllers/my_functions.dart';
 import 'package:AirNow/Controllers/recherche.dart';
 import 'package:AirNow/constants/dev_flags.dart';
@@ -97,6 +98,7 @@ class _MapScreenState extends State<MapScreen> {
                           getTemperatureFromFirebase(_currentPosition),
                           getAQICategoryFromFirebase(_currentPosition),
                           getAQIFromFirebase(_currentPosition),
+                          
                         ]);
 
                         // Attribution des résultats
@@ -112,6 +114,8 @@ class _MapScreenState extends State<MapScreen> {
                         double? temperature = results[9];
                         double? aqivaluecat = results[10];
                         double? aqivalue = results[11];
+                       List<int> predictions = await getPredictions(co!, o3!, pm25!, pm10!, so2!, no2!);
+                       print('predictions = $predictions');
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
