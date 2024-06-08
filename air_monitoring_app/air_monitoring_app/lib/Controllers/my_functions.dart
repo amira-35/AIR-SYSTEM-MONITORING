@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:AirNow/constants/dev_flags.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:math' as math;
 
@@ -618,17 +619,17 @@ LatLng calculateNewPosition(LatLng currentPosition, double distanceKm, double be
 
 Color getColorForAQI(double aqi) {
   if (aqi <= 50) {
-    return Colors.lightGreen;
-  } else if (aqi <= 100) {
     return Colors.green;
-  } else if (aqi <= 150) {
+  } else if (aqi <= 100) {
     return Colors.yellow;
-  } else if (aqi <= 200) {
+  } else if (aqi <= 150) {
     return Colors.orange;
-  } else if (aqi <= 300) {
+  } else if (aqi <= 200) {
     return Colors.red;
-  } else if (aqi > 300) {
+  } else if (aqi <= 300) {
     return Colors.purple;
+  } else if (aqi > 300) {
+    return Colors.brown;
   } else {
     return Colors.black;
   }
@@ -653,22 +654,18 @@ String getAdviceForAQICategory(String aqiCategory) {
   }
 }
 
-/*void _fetchDataFromFirebase() {
-    final databaseReference = FirebaseDatabase.instance.reference().child('Region');
-    databaseReference.onValue.listen((event) {
-      Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
-      if (data != null) {
-        data.forEach((key, value) {
-          Map<String, dynamic> entry = Map<String, dynamic>.from(value);
-          double? latitude = entry['Latitude'] as double?;
-          double? longitude = entry['Longitude'] as double?;
-          double? AQI = entry['AQI'] as double?;
-          if (latitude != null && longitude != null) {
+  List<String> getNextSevenDays() {
+  List<String> days = [];
+  DateTime now = DateTime.now();
+  DateFormat formatter = DateFormat('EEEE');
 
-          }
-        });
-      } else {
-        print('No data found.');
-      }
-    });
-  }*/
+  for (int i = 0; i < 7; i++) {
+    DateTime nextDay = now.add(Duration(days: i));
+    String dayName = (i == 0) ? 'Today' : formatter.format(nextDay);
+    days.add(dayName);
+  }
+  
+  return days;
+}
+
+

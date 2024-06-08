@@ -36,10 +36,11 @@ class _MapScreenState extends State<MapScreen> {
   List<Bearing> bearings = [];
   Timer? _timer;
   bool isMoving = false;
+  late final String day;
 
   @override
   void initState() {
-    super.initState();
+    super.initState();    
     _requestPermission();
   }
 
@@ -114,9 +115,10 @@ class _MapScreenState extends State<MapScreen> {
                         double? temperature = results[9];
                         double? aqivaluecat = results[10];
                         double? aqivalue = results[11];
-                       List<int> predictions = await getPredictions(co!, o3!, pm25!, pm10!, so2!, no2!);
-                       print('predictions = $predictions');
-                        showDialog(
+                       List<String> days = getNextSevenDays();
+                       List<double> predictions = await getPredictions(co!, o3!, pm25!, pm10!, so2!, no2!);
+                       print('predictions = $predictions');                     
+                                              showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
@@ -203,19 +205,19 @@ class _MapScreenState extends State<MapScreen> {
                                                 scrollDirection: Axis.horizontal,
                                                 child: Row(
                                                   children: [
-                                                    CategoryCard('Today', 'Excellent', Colors.green),
+                                                    CategoryCard('Today', aqivaluecat!),
                                                     const SizedBox(width: 10),
-                                                    CategoryCard('Monday', 'Fair', Colors.lightGreen),
+                                                    CategoryCard(days[1], predictions[0]),
                                                     const SizedBox(width: 10),
-                                                    CategoryCard('Tuesday', 'Poor', Colors.yellow),
+                                                    CategoryCard(days[2], predictions[1] ),
                                                     const SizedBox(width: 10),
-                                                    CategoryCard('Wednesday', 'Fair', Colors.lightGreen),
+                                                    CategoryCard(days[3], predictions[2]),
                                                     const SizedBox(width: 10),
-                                                    CategoryCard('Thursday', 'Fair', Colors.lightGreen),
+                                                    CategoryCard(days[4], predictions[3]),
                                                     const SizedBox(width: 10),
-                                                    CategoryCard('Friday', 'Very Unhealthy', Colors.purple),
+                                                    CategoryCard(days[5], predictions[4]),
                                                     const SizedBox(width: 10),
-                                                    CategoryCard('Saturday', 'Very Unhealthy', Colors.purple),
+                                                    CategoryCard(days[6], predictions[5]),
                                                   ],
                                                 ),
                                               ),

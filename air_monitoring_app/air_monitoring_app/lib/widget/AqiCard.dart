@@ -4,23 +4,23 @@ Widget AqiCard(double aqiValue) {
   String aqiCategory;
 
   if (aqiValue <= 50) {
-    cardColor = Colors.lightGreen;
-    aqiCategory = 'Excellent';
-  } else if (aqiValue <= 100) {
     cardColor = Colors.green;
-    aqiCategory = 'Fair';
-  } else if (aqiValue <= 150) {
+    aqiCategory = 'Good';
+  } else if (aqiValue <= 100) {
     cardColor = Colors.yellow;
+    aqiCategory = 'Moderate';
+  } else if (aqiValue <= 150) {
+    cardColor = Colors.orange;
     aqiCategory = 'Poor';
   } else if (aqiValue <= 200) {
-    cardColor = Colors.orange;
+    cardColor = Colors.red;
     aqiCategory = 'Unhealthy';
   } else if (aqiValue <= 300) {
-    cardColor = Colors.red;
+    cardColor = Colors.purple;
     aqiCategory = 'Very Unhealthy';
   }
   else {
-    cardColor = Colors.purple;
+    cardColor = Colors.brown;
     aqiCategory = 'Dangerous';
   }
 

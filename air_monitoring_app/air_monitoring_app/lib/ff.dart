@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
@@ -458,3 +458,4 @@ class _MapScreenState extends State<MapScreen> {
     return 45; // Valeur fictive de la direction du vent
   }
 }
+*/

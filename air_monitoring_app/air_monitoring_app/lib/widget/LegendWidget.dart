@@ -5,22 +5,22 @@ class LegendWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(12.0),
-      color: Colors.white.withOpacity(0.5),
+      color: Colors.white.withOpacity(0.9),
       child: Column (
         children: [
           Row(  children: [
-            LegendItem(color: Colors.green, label: 'Excellent'),
-            LegendItem(color: Colors.lightGreen, label: 'Fair'),
-            LegendItem(color: Colors.yellow, label: 'Poor'),
+            LegendItem(color: Colors.green, label: 'Good'),
+            LegendItem(color: Colors.yellow, label: 'Moderate'),
+            LegendItem(color: Colors.orange, label: 'Poor'),
     
           ], 
             
           ),
           Row(
              children: [
-            LegendItem(color: Colors.orange, label: 'Unhealthy'),
-            LegendItem(color: Colors.red, label: 'Very Unhealthy'),
-            LegendItem(color: Colors.purple, label: 'Dangerous'),
+            LegendItem(color: Colors.red, label: 'Unhealthy'),
+            LegendItem(color: Colors.purple, label: 'Very Unhealthy'),
+            LegendItem(color: Colors.brown, label: 'Dangerous'),
           ], 
 
           ),
