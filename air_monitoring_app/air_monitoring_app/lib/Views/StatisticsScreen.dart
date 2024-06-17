@@ -27,8 +27,6 @@ void fetchData() {
       DataSnapshot snapshot = event.snapshot;
       Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
 
-      print('Fetched values: $values');
-
       values.forEach((key, value) {
         AirQualityData dataPoint = AirQualityData.fromJson(value);
         fetchedData.add(dataPoint);
@@ -64,7 +62,7 @@ void fetchData() {
               return series.o3;
             case 'PM10':
               return series.pm10;
-            case 'PM25':
+            case 'PM2.5':
               return series.pm25;
             case 'SO2':
               return series.so2;

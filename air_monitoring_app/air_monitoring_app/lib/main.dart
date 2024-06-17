@@ -6,7 +6,7 @@ import 'Views/MapScreen.dart';
 import 'Views/StatisticsScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+//import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() async {
@@ -37,6 +37,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _tabs = [
     MapScreen(),
     AirQualityChart(),
+    
   ];
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -61,14 +62,26 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 
   Future<void> _checkAirQuality() async {
+   bool serviceEnabled = await _checkLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showGpsDisabledDialog();
+      return;
+    }
+
     Position position = await _getCurrentPosition();
     LatLng _currentPosition = LatLng(position.latitude, position.longitude);
-    
-    double? aqi = await getAQIFromFirebase(_currentPosition);
+    double? aqi = await getAQICategoryFromFirebase(_currentPosition);
 
     if (aqi != null && aqi > 4) {
       _sendNotification('Alert', 'Attention, your location is very polluted!');
     }
+  }
+   Future<bool> _checkLocationServiceEnabled() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showGpsDisabledDialog();
+    }
+    return serviceEnabled;
   }
 
   Future<Position> _getCurrentPosition() async {
@@ -77,6 +90,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      _showGpsDisabledDialog();
       return Future.error('Location services are disabled.');
     }
 
@@ -94,6 +108,26 @@ class _BottomNavBarState extends State<BottomNavBar> {
     }
 
     return await Geolocator.getCurrentPosition();
+  }
+
+  void _showGpsDisabledDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('GPS is disabled'),
+          content: Text('Please enable location services to continue.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _sendNotification(String title, String body) async {
@@ -133,6 +167,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           icon: const Icon(Icons.air),
           onPressed: () {
             // Action à effectuer lors du clic sur l'icône de position
+            _checkAirQuality(); // Check air quality when the icon is pressed
           },
         ),
       ),
