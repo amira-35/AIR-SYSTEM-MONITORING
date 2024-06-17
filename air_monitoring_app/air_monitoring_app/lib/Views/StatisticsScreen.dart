@@ -174,8 +174,18 @@ void fetchData() {
         break;
     }
 
-    return data
+    final filteredData = data
         .where((dataPoint) => dataPoint.dateTime.isAfter(startDate))
         .toList();
+
+    final sortedByDate = filteredData..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    final filteredByUniqueDays = sortedByDate.fold<List<AirQualityData>>([], (previousValue, element) {
+      if (previousValue.isEmpty || previousValue.last.dateTime.day != element.dateTime.day) {
+        previousValue.add(element);
+      }
+      return previousValue;
+    });
+    return filteredByUniqueDays;
   }
+
 }
