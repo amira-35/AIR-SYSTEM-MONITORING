@@ -179,7 +179,7 @@ def simulate_real_time_data(seconds, filename, latitude_range, longitude_range):
         df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
         df.to_csv(filename, index=False)
         send_data_to_firebase(new_data)
-        time.sleep(2)
+        time.sleep(seconds)
 
 # Exemple d'utilisation
 latitude_range = (36.5813, 36.8196)
