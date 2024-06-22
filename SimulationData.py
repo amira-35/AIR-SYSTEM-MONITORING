@@ -101,6 +101,7 @@ def calculate_aqi(no2, co, pm10, pm25, so2, o3):
             no2 = (tab_AQI[i][1] - tab_AQI[i][0]) / (conc_range[1] - conc_range[0]) * (no2 - conc_range[0]) + tab_AQI[i][0]
 
     return max(o3, pm25, pm10, co, so2, no2)
+
 #classifier l'aqi 
 def assign_aqi_category(aqi):
     if aqi <= 50:
@@ -149,15 +150,17 @@ def simulate_real_time_data(seconds, filename, latitude_range, longitude_range):
         wind_speed, wind_direction, humidity, temperature = get_weather_info(latitude, longitude)
          
         # Générer des données aléatoires de pollution
-        no2 = round(random.uniform(0, 100), 2)
-        co = round(random.uniform(0, 20), 2)
-        pm10 = round(random.uniform(0, 100), 2)
-        pm25 = round(random.uniform(0, 100), 2)
-        so2 = round(random.uniform(0, 100), 2)
-        o3 = round(random.uniform(0, 100), 2)
+        no2 = round(random.uniform(0, 400), 2)
+        co = round(random.uniform(0, 30), 2)
+        pm10 = round(random.uniform(0, 1000), 2)
+        pm25 = round(random.uniform(0, 1000), 2)
+        so2 = round(random.uniform(0, 200), 2)
+        o3 = round(random.uniform(0, 200), 2)
+
         # Calculer l'aqi globale 
         aqiglob = round(calculate_aqi(o3, pm25, pm10, co, so2, no2), 2)
         aqicat = assign_aqi_category(aqiglob)
+
         new_data = {
             "DateTime": datetime.now().isoformat(),
             "Latitude": latitude,

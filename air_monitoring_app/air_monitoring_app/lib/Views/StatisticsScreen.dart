@@ -21,7 +21,7 @@ class _AirQualityChartState extends State<AirQualityChart> {
     fetchData();
   }
 
-void fetchData() {
+  void fetchData() {
     databaseReference.once().then((DatabaseEvent event) {
       List<AirQualityData> fetchedData = [];
       DataSnapshot snapshot = event.snapshot;
@@ -121,7 +121,7 @@ void fetchData() {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SizedBox(
-                 width: chartWidth, // Replace with desired width
+                width: chartWidth, // Replace with desired width
                 height: 300, // Replace with desired height
                 child: charts.TimeSeriesChart(
                   series,
@@ -174,18 +174,72 @@ void fetchData() {
         break;
     }
 
-    final filteredData = data
+    List<AirQualityData> filteredData = data
         .where((dataPoint) => dataPoint.dateTime.isAfter(startDate))
         .toList();
 
-    final sortedByDate = filteredData..sort((a, b) => a.dateTime.compareTo(b.dateTime));
-    final filteredByUniqueDays = sortedByDate.fold<List<AirQualityData>>([], (previousValue, element) {
-      if (previousValue.isEmpty || previousValue.last.dateTime.day != element.dateTime.day) {
-        previousValue.add(element);
-      }
-      return previousValue;
-    });
-    return filteredByUniqueDays;
-  }
+    if (selectedInterval == '24 Hours') {
+      Map<DateTime, AirQualityData> hourlyData = {};
 
+      for (var dataPoint in filteredData) {
+        DateTime hour = DateTime(dataPoint.dateTime.year, dataPoint.dateTime.month,
+            dataPoint.dateTime.day, dataPoint.dateTime.hour);
+        if (!hourlyData.containsKey(hour)) {
+          hourlyData[hour] = dataPoint;
+        }
+      }
+
+      List<AirQualityData> result = hourlyData.values.toList();
+      result.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      return result;
+    } else {
+      Map<DateTime, List<AirQualityData>> groupedData = {};
+
+      for (var dataPoint in filteredData) {
+        DateTime date = DateTime(dataPoint.dateTime.year, dataPoint.dateTime.month, dataPoint.dateTime.day);
+        if (!groupedData.containsKey(date)) {
+          groupedData[date] = [];
+        }
+        groupedData[date]!.add(dataPoint);
+      }
+
+      List<AirQualityData> averagedData = [];
+
+      groupedData.forEach((date, dataPoints) {
+        double coSum = 0;
+        double no2Sum = 0;
+        double o3Sum = 0;
+        double pm10Sum = 0;
+        double pm25Sum = 0;
+        double so2Sum = 0;
+        double aqiSum = 0;
+
+        for (var dataPoint in dataPoints) {
+          coSum += dataPoint.co;
+          no2Sum += dataPoint.no2;
+          o3Sum += dataPoint.o3;
+          pm10Sum += dataPoint.pm10;
+          pm25Sum += dataPoint.pm25;
+          so2Sum += dataPoint.so2;
+          aqiSum += dataPoint.aqi;
+        }
+
+        int count = dataPoints.length;
+
+        averagedData.add(AirQualityData(
+          dateTime: date,
+          co: coSum / count,
+          no2: no2Sum / count,
+          o3: o3Sum / count,
+          pm10: pm10Sum / count,
+          pm25: pm25Sum / count,
+          so2: so2Sum / count,
+          aqi: aqiSum / count,
+        ));
+      });
+
+      averagedData.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      return averagedData;
+    }
+  }
 }

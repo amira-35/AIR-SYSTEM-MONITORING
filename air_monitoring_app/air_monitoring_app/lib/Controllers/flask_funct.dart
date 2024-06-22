@@ -17,6 +17,7 @@ Future<List<double>> fetchPredictions(List<List<double>> features) async {
     }
   }
 
+
   Future<List<double>> getPredictions(double co, double o3, double pm25, double pm10, double so2, double no2) async {
   try {
     // Préparer les caractéristiques pour 24 heures
